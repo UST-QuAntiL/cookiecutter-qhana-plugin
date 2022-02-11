@@ -1,0 +1,2 @@
+qhana-plugin-runner @ git+https://github.com/UST-QuAntiL/qhana-plugin-runner.git@main ; python_version >= "3.7" and python_version < "4.0"
+

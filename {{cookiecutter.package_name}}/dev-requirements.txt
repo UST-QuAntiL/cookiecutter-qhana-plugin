@@ -1,0 +1,19 @@
+alabaster==0.7.12; python_version >= "3.6"
+{%- if cookiecutter.use_black == 'y' %}
+black==21.12b0; python_full_version >= "3.6.2"
+{%- endif %}
+{%- if cookiecutter.use_flake8 == 'y' %}
+flake8-bugbear==21.11.29; python_version >= "3.6"
+flake8-docstrings==1.6.0
+flake8==3.9.2; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
+pycodestyle==2.7.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0"
+pydocstyle==6.1.1; python_version >= "3.6"
+{%- endif %}
+invoke==1.6.0
+myst-parser==0.15.2; python_version >= "3.6"
+pip-licenses==3.5.3; python_version >= "3.6" and python_version < "4.0"
+python-dotenv==0.19.2; python_version >= "3.6" and python_version < "4"
+sphinx-rtd-theme==0.5.2
+sphinx==4.4.0; python_version >= "3.6"
+sphinxcontrib-jsmath==1.0.1; python_version >= "3.6"
+tomli==1.2.3; python_version >= "3.6" and python_full_version >= "3.6.2"

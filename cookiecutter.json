@@ -1,0 +1,18 @@
+{
+    "full_name": "Your Name",
+    "plugin_name": "Hello World",
+    "description": "A small description (_markdown_ enabled).",
+    "plugin_identifier": "{{ cookiecutter.plugin_name | slugify }}",
+    "plugin_version": "v0.1.0",
+    "package_name": "{{ cookiecutter.plugin_identifier.replace('-', '_') }}",
+    "base_classname": "{{ cookiecutter.plugin_identifier.split('-') | map('capitalize') | join('') }}",
+    "use_poetry": "y",
+    "use_flake8": "y",
+    "use_black": "y",
+    "configure_vscode": "y",
+    "plugin_license": "Apache-2.0",
+    "_extensions": [
+        "cookiecutter.extensions.SlugifyExtension",
+        "cookiecutter.extensions.JsonifyExtension"
+    ]
+}

@@ -1,0 +1,72 @@
+services:
+  backend:
+    build: https://github.com/UST-QuAntiL/qhana-backend.git#main
+    image: qhana-backend
+    ports:
+      - 9090:9090
+  ui:
+    build: https://github.com/UST-QuAntiL/qhana-ui.git#main
+    image: qhana-ui
+    ports:
+      - 4200:4200
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+  muse-db:
+    image: "muse-db"
+    profiles:
+      - muse
+      - full
+  qhana-plugin-runner:
+    platform: linux/amd64
+    build: https://github.com/UST-QuAntiL/qhana-plugin-runner.git#main
+    image: qhana-plugin-runner
+    depends_on:
+      - redis-internal
+      - postgres
+    profiles:
+      - plugins
+      - full
+    ports:
+      - 5000:5005
+    volumes:
+      - instance:/app/instance
+    environment:
+      BROKER_URL: redis://redis-internal:6379
+      RESULT_BACKEND: redis://redis-internal:6379
+      SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://user:password@postgres:5432/default_db"
+    entrypoint: ["/app/start.sh"]
+  worker:
+    build: https://github.com/UST-QuAntiL/qhana-plugin-runner.git#main
+    image: qhana-plugin-runner
+    depends_on:
+      - qhana-plugin-runner
+    profiles:
+      - plugins
+      - full
+    volumes:
+      - instance:/app/instance
+    environment:
+      BROKER_URL: redis://redis-internal:6379
+      RESULT_BACKEND: redis://redis-internal:6379
+      SQLALCHEMY_DATABASE_URI: "postgresql+psycopg2://user:password@postgres:5432/default_db"
+    entrypoint: ["poetry", "run", "invoke", "worker"]
+  redis-internal:
+    image: "redis:latest"
+    ports:
+      - "6378:6379"
+    profiles:
+      - plugins
+      - full
+  postgres:
+    image: "postgres:latest"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: default_db
+    profiles:
+      - plugins
+      - full
+volumes:
+  instance:
