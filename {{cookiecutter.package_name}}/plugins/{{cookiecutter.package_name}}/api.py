@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Mapping, Optional, List, Dict, Tuple
 
 import marshmallow as ma
+from flask import abort
 from flask.wrappers import Response
 from flask.globals import request
 from flask.helpers import url_for
@@ -47,15 +48,18 @@ class PluginView(MethodView):
     @PLUGIN_BLP.require_jwt("jwt", optional=True)
     def get(self):
         """Endpoint returning the plugin metadata."""
+        plugin = {{cookiecutter.base_classname}}.instance
+        if plugin is None:
+            abort(HTTPStatus.INTERNAL_SERVER_ERROR)
         return PluginMetadata(
             # human readable title and description
-            title={{cookiecutter.base_classname}}.instance.name,
+            title=plugin.name,
             description=PLUGIN_BLP.description,
             # machine readable identifying name and version
-            name={{cookiecutter.base_classname}}.instance.identifier,
-            version={{cookiecutter.base_classname}}.instance.version,
+            name=plugin.identifier,
+            version=plugin.version,
             # pluin type: "processing"|"visualizing"|"conversion" (actual values still WIP!! confirm with current documentation)
-            type="processing",
+            type=PluginType.processing,
             # tags describing the plugin, e.g. ml:autoencoder, ml:svm
             tags=[],
             # the main plugin entry point
@@ -126,12 +130,15 @@ class MicroFrontend(MethodView):
         Returns:
             Response: the rendered template with the submitted data prefilled and errors
         """
+        plugin = {{cookiecutter.base_classname}}.instance
+        if plugin is None:
+            abort(HTTPStatus.INTERNAL_SERVER_ERROR)
         schema = {{cookiecutter.base_classname}}ParametersSchema()
         return Response(
             render_template(
                 "simple_template.html",
-                name={{cookiecutter.base_classname}}.instance.name,
-                version={{cookiecutter.base_classname}}.instance.version,
+                name=plugin.name,
+                version=plugin.version,
                 schema=schema, #schema is used to create the html form
                 values=data, # data is used to prefill values in the form
                 errors=errors, # errors is used to show error texts in the form
